@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { fetchDetail, fetchNews, aiAnalysis } from "../api/market";
 import { fmt, pct, clr } from "../utils/format";
 
@@ -171,50 +171,29 @@ function SummaryTab({ d }) {
 
 // ─── TRADINGVIEW CHART TAB ────────────────────────────────────────────────────
 function ChartTab({ sym }) {
-  const containerRef = useRef(null);
   const tvSym = "NSE:" + sym.replace(".NS", "");
-
-  useEffect(() => {
-    const el = containerRef.current;
-    if (!el) return;
-    el.innerHTML = "";
-
-    const wrapper = document.createElement("div");
-    wrapper.className = "tradingview-widget-container__widget";
-    wrapper.style.cssText = "height:100%;width:100%;";
-    el.appendChild(wrapper);
-
-    const script = document.createElement("script");
-    script.type  = "text/javascript";
-    script.src   = "https://s3.tradingview.com/external-embedding/embed-widget-advanced-chart.js";
-    script.async = true;
-    script.innerHTML = JSON.stringify({
-      autosize:           true,
-      symbol:             tvSym,
-      interval:           "D",
-      timezone:           "Asia/Kolkata",
-      theme:              "dark",
-      style:              "1",
-      locale:             "en",
-      backgroundColor:    "#090c11",
-      gridColor:          "rgba(255,255,255,0.04)",
-      hide_top_toolbar:   false,
-      hide_legend:        false,
-      allow_symbol_change: false,
-      save_image:         true,
-      calendar:           false,
-      studies:            ["Volume@tv-basicstudies", "MAExp@tv-basicstudies"],
-      support_host:       "https://www.tradingview.com",
-    });
-    el.appendChild(script);
-    return () => { el.innerHTML = ""; };
-  }, [tvSym]);
+  // Use iframe embed — no script injection, works perfectly with CSP
+  const params = new URLSearchParams({
+    symbol: tvSym,
+    interval: "D",
+    timezone: "Asia/Kolkata",
+    theme: "dark",
+    style: "1",
+    locale: "en",
+    toolbar_bg: "#090c11",
+    enable_publishing: "false",
+    hide_side_toolbar: "false",
+    allow_symbol_change: "false",
+    studies: "MAExp@tv-basicstudies,Volume@tv-basicstudies",
+    save_image: "true",
+    withdateranges: "true",
+  });
+  const src = `https://s.tradingview.com/widgetembed/?${params.toString()}`;
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", height: "calc(100vh - 120px)" }}>
-      {/* Info bar */}
+    <div style={{ display: "flex", flexDirection: "column", height: "calc(100vh - 115px)" }}>
       <div style={{
-        display: "flex", alignItems: "center", gap: 10, padding: "10px 20px",
+        display: "flex", alignItems: "center", gap: 10, padding: "8px 20px",
         background: "rgba(255,255,255,0.02)", borderBottom: "1px solid rgba(255,255,255,0.06)",
         flexShrink: 0,
       }}>
@@ -223,11 +202,18 @@ function ChartTab({ sym }) {
           LIVE CHART · <span style={{ color: "#4fffb0" }}>{tvSym}</span> · Powered by TradingView
         </span>
         <a href={`https://www.tradingview.com/chart/?symbol=${tvSym}`} target="_blank" rel="noopener noreferrer"
-          style={{ marginLeft: "auto", fontSize: 10, color: "#4fffb0", fontFamily: "'DM Mono',monospace", textDecoration: "none", display: "flex", alignItems: "center", gap: 4 }}>
+          style={{ marginLeft: "auto", fontSize: 10, color: "#4fffb0", fontFamily: "'DM Mono',monospace", textDecoration: "none" }}>
           Open full chart ↗
         </a>
       </div>
-      <div ref={containerRef} className="tradingview-widget-container" style={{ flex: 1, minHeight: 0 }} />
+      <iframe
+        key={tvSym}
+        src={src}
+        title={tvSym + " Live Chart"}
+        style={{ flex: 1, border: "none", width: "100%", minHeight: 0 }}
+        allow="fullscreen"
+        loading="lazy"
+      />
     </div>
   );
 }

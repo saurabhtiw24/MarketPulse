@@ -6,13 +6,13 @@
 [[headers]]
   for = "/*"
   [headers.values]
-    X-Frame-Options            = "SAMEORIGIN"
-    X-Content-Type-Options     = "nosniff"
-    X-XSS-Protection           = "1; mode=block"
-    Referrer-Policy            = "strict-origin-when-cross-origin"
-    Strict-Transport-Security  = "max-age=63072000; includeSubDomains; preload"
-    Permissions-Policy         = "camera=(), microphone=(), geolocation=()"
-    Content-Security-Policy    = "default-src 'self'; script-src 'self' 'unsafe-inline' https://s3.tradingview.com https://charting-library.tradingview-widget.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; connect-src 'self' https://corsproxy.io https://query1.finance.yahoo.com https://feeds.finance.yahoo.com https://www.tradingview.com; img-src 'self' data: https://s3.tradingview.com; frame-src https://www.tradingview.com https://s3.tradingview.com; frame-ancestors 'none';"
+    X-Content-Type-Options    = "nosniff"
+    X-XSS-Protection          = "1; mode=block"
+    Referrer-Policy           = "strict-origin-when-cross-origin"
+    Strict-Transport-Security = "max-age=63072000; includeSubDomains; preload"
+    Permissions-Policy        = "camera=(), microphone=(), geolocation=()"
+    # TradingView needs script-src + frame-src. All Yahoo calls go server-side now.
+    Content-Security-Policy   = "default-src 'self'; script-src 'self' 'unsafe-inline' https://s3.tradingview.com https://charting-library.tradingview-widget.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; connect-src 'self' https://www.tradingview.com; img-src 'self' data: https://s3.tradingview.com https://s.tradingview.com; frame-src https://s.tradingview.com https://www.tradingview.com; worker-src blob:; frame-ancestors 'none';"
 
 [[redirects]]
   from   = "/*"
