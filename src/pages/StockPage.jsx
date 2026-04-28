@@ -528,7 +528,7 @@ export default function StockPage({ s, q, mode, onBack }) {
         display: "flex", padding: "0 20px",
       }}>
         {TABS.map(t => (
-          <button key={t} onClick={() => setTab(t)} aria-selected={tab === t} style={{
+          <button key={t} onClick={() => setTab(t)} aria-current={tab === t ? "page" : undefined} style={{
             padding: "11px 18px", border: "none", background: "transparent", cursor: "pointer",
             fontFamily: "'Syne',sans-serif", fontWeight: 700, fontSize: 12,
             color: tab === t ? "#4fffb0" : "#5a6278",
